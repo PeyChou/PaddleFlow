@@ -58,7 +58,7 @@ func findUniqueParentDirs(paths []string) []string {
 		wg.Done()
 	}
 
-	pool, _ = ants.NewPool(poolSize)
+	dirPool, _ := ants.NewPool(poolSize)
 	log.Infof("Start to find unique parent dirs")
 
 	// 分批提交协程池处理
@@ -72,7 +72,7 @@ func findUniqueParentDirs(paths []string) []string {
 				end = len(paths)
 			}
 			wg.Add(1)
-			_ = pool.Submit(func() {
+			_ = dirPool.Submit(func() {
 				processBatch(paths[start:end])
 			})
 		}
@@ -85,7 +85,7 @@ func findUniqueParentDirs(paths []string) []string {
 				end = len(paths)
 			}
 			wg.Add(1)
-			_ = pool.Submit(func() {
+			_ = dirPool.Submit(func() {
 				processBatch(paths[start:end])
 			})
 		}
