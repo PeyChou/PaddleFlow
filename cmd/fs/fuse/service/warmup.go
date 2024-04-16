@@ -25,6 +25,7 @@ const minxFileCount = 5
 func findUniqueParentDirs(paths []string) []string {
 	var wg sync.WaitGroup
 	var rwmu sync.RWMutex
+	var mu sync.Mutex
 	parentDirMap := make(map[string]map[string]struct{})
 	uniqueParentDirs := make([]string, 0)
 
@@ -33,7 +34,9 @@ func findUniqueParentDirs(paths []string) []string {
 		for _, p := range pathBatch {
 			// 忽略目录，只处理文件
 			if p[len(p)-1] == '/' {
+				mu.Lock()
 				uniqueParentDirs = append(uniqueParentDirs, p)
+				mu.Unlock()
 				continue
 			}
 			// 获取文件的父目录
