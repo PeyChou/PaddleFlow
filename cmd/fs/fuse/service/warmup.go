@@ -26,12 +26,14 @@ func findUniqueParentDirs(paths []string) []string {
 	var wg sync.WaitGroup
 	var rwmu sync.RWMutex
 	parentDirMap := make(map[string]map[string]struct{})
+	uniqueParentDirs := make([]string, 0)
 
 	// 协程任务
 	processBatch := func(pathBatch []string) {
 		for _, p := range pathBatch {
 			// 忽略目录，只处理文件
 			if p[len(p)-1] == '/' {
+				uniqueParentDirs = append(uniqueParentDirs, p)
 				continue
 			}
 			// 获取文件的父目录
@@ -94,7 +96,6 @@ func findUniqueParentDirs(paths []string) []string {
 	wg.Wait()
 
 	// 从 parentDirMap 中提取结果
-	uniqueParentDirs := make([]string, 0)
 	for parentPath, dirMap := range parentDirMap {
 		if len(dirMap) >= minxFileCount {
 			uniqueParentDirs = append(uniqueParentDirs, parentPath)
@@ -110,12 +111,11 @@ func findUniqueParentDirs(paths []string) []string {
 
 func warmup(ctx *cli.Context) error {
 	fname := ctx.String("file")
-	paths := ctx.Args().Slice()
 	threads := int(ctx.Uint("threads"))
 	warmType := ctx.String("type")
 	recursive := ctx.Bool("recursive")
 	pool, _ = ants.NewPool(threads)
-	return warmup_(fname, paths, threads, warmType, recursive)
+	return warmup_(fname, []string{}, threads, warmType, recursive)
 }
 
 func warmup_(fname string, paths []string, threads int, warmType string, recursive bool) error {
