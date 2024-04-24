@@ -38,7 +38,7 @@ func MockMain(args []string) error {
 
 func mountTemp(t *testing.T) {
 	os.MkdirAll(testMountPoint, 0755)
-	mountArgs := []string{"", "mount", "-d", "true"}
+	mountArgs := []string{"", "mount", "-d", "true", "--local", "true"}
 	go func() {
 		if err := MockMain(mountArgs); err != nil {
 			t.Errorf("mount failed: %s", err)
