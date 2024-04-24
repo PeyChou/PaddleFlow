@@ -19,7 +19,6 @@ package service
 import (
 	"encoding/json"
 	"fmt"
-	utils2 "github.com/PaddlePaddle/PaddleFlow/pkg/fs/client/utils"
 	"io/ioutil"
 	"math"
 	"net"
@@ -32,6 +31,7 @@ import (
 	"syscall"
 	"time"
 
+	utils2 "github.com/PaddlePaddle/PaddleFlow/pkg/fs/client/utils"
 	libfuse "github.com/hanwen/go-fuse/v2/fuse"
 	"github.com/prometheus/client_golang/prometheus"
 	"github.com/prometheus/client_golang/prometheus/promhttp"
