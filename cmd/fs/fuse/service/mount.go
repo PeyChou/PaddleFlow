@@ -284,7 +284,9 @@ func InitVFS(c *cli.Context, registry *prometheus.Registry) error {
 	server := c.String("server")
 	if c.Bool("local") == true {
 		localRoot := c.String("local-root")
-		localRoot = "./mock"
+		if localRoot == "" {
+			localRoot = "./mock"
+		}
 		if localRoot == "" || localRoot == "/" {
 			log.Errorf("invalid localRoot: [%s]", localRoot)
 			return fmt.Errorf("invalid localRoot: [%s]", localRoot)

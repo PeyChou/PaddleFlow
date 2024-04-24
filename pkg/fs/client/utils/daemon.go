@@ -34,7 +34,10 @@ func MakeDaemon(attrs *DaemonAttr) (io.Reader, io.Reader, error) {
 		if stage > 0 {
 			os.Exit(1)
 		}
-		resetEnv()
+		err = resetEnv()
+		if err != nil {
+			return nil, nil, err
+		}
 		return nil, nil, err
 	}
 
@@ -114,16 +117,25 @@ func MakeDaemon(attrs *DaemonAttr) (io.Reader, io.Reader, error) {
 		if err != nil {
 			return fatal(fmt.Errorf("can't create process %s: %s", procName, err))
 		}
-		proc.Release()
+		err = proc.Release()
+		if err != nil {
+			return nil, nil, err
+		}
 		if attrs.OnExit != nil {
-			attrs.OnExit(stage)
+			err := attrs.OnExit(stage)
+			if err != nil {
+				return nil, nil, err
+			}
 		}
 		os.Exit(0)
 	}
 
 	//os.Chdir("/")
 	syscall.Umask(0)
-	resetEnv()
+	err := resetEnv()
+	if err != nil {
+		return nil, nil, err
+	}
 
 	for fd := 3; fd < fileCount; fd++ {
 		resetFileName(fd)
