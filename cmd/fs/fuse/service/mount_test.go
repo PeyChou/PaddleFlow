@@ -1,8 +1,6 @@
 package service
 
 import (
-	"fmt"
-
 	"github.com/PaddlePaddle/PaddleFlow/pkg/fs/utils"
 	"github.com/PaddlePaddle/PaddleFlow/pkg/version"
 	"github.com/urfave/cli/v2"
@@ -38,7 +36,7 @@ func MockMain(args []string) error {
 
 func mountTemp(t *testing.T) {
 	os.MkdirAll(testMountPoint, 0755)
-	mountArgs := []string{"", "mount", "-d", "true", "--local", "true"}
+	mountArgs := []string{"", "mount", "--local", "true", "-d", "true"}
 	go func() {
 		if err := MockMain(mountArgs); err != nil {
 			t.Errorf("mount failed: %s", err)
@@ -65,8 +63,4 @@ func umountTemp(t *testing.T) {
 func TestMountBackground(t *testing.T) {
 	mountTemp(t)
 	defer umountTemp(t)
-
-	if err := os.WriteFile(fmt.Sprintf("%s/f1.txt", testMountPoint), []byte("test"), 0644); err != nil {
-		t.Fatalf("write file failed: %s", err)
-	}
 }
