@@ -284,6 +284,7 @@ func InitVFS(c *cli.Context, registry *prometheus.Registry) error {
 	server := c.String("server")
 	if c.Bool("local") == true {
 		localRoot := c.String("local-root")
+		localRoot = "./mock"
 		if localRoot == "" || localRoot == "/" {
 			log.Errorf("invalid localRoot: [%s]", localRoot)
 			return fmt.Errorf("invalid localRoot: [%s]", localRoot)
@@ -424,6 +425,9 @@ func InitVFS(c *cli.Context, registry *prometheus.Registry) error {
 		Config: kv.Config{
 			CachePath: c.String("data-cache-path"),
 		},
+	}
+	if fsMeta.Properties == nil {
+		fsMeta.Properties = make(map[string]string)
 	}
 	if c.Bool("no-implicit-dir") {
 		fsMeta.Properties[common.ImplicitDir] = "false"

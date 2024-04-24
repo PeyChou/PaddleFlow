@@ -26,9 +26,6 @@ func MockMain(args []string) error {
 		Commands: []*cli.Command{
 			CmdMount(),
 			CmdUmount(),
-			CmdStats(),
-			CmdBench(),
-			CmdWarmup(),
 		},
 	}
 	return app.Run(args)
@@ -36,13 +33,15 @@ func MockMain(args []string) error {
 
 func mountTemp(t *testing.T) {
 	os.MkdirAll(testMountPoint, 0755)
-	mountArgs := []string{"", "mount", "--local", "true", "-d", "true"}
+	mountArgs := []string{"", "mount", "-mp", testMountPoint, "--local", "true", "--local-root", testMountPoint, "-d", "true"}
+
 	go func() {
 		if err := MockMain(mountArgs); err != nil {
 			t.Errorf("mount failed: %s", err)
 		}
 	}()
 	time.Sleep(3 * time.Second)
+
 	inode, err := utils.GetFileInode(testMountPoint)
 	if err != nil {
 		t.Fatalf("get file inode failed: %s", err)
