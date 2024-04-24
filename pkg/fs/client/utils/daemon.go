@@ -34,9 +34,9 @@ func MakeDaemon(attrs *DaemonAttr) (io.Reader, io.Reader, error) {
 		if stage > 0 {
 			os.Exit(1)
 		}
-		err = resetEnv()
+		resetErr := resetEnv()
 		if err != nil {
-			return nil, nil, err
+			return nil, nil, resetErr
 		}
 		return nil, nil, err
 	}
