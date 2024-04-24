@@ -19,6 +19,7 @@ package service
 import (
 	"encoding/json"
 	"fmt"
+	utils2 "github.com/PaddlePaddle/PaddleFlow/pkg/fs/client/utils"
 	"io/ioutil"
 	"math"
 	"net"
@@ -234,6 +235,10 @@ func mount(c *cli.Context) error {
 		return err
 	}
 
+	if c.Bool("background") {
+		daemonRun()
+	}
+
 	if !c.Bool("local") {
 		stopChan := make(chan struct{})
 		defer close(stopChan)
@@ -248,7 +253,7 @@ func mount(c *cli.Context) error {
 		}
 	}
 
-	log.Debugf("start mount service")
+	log.Infof("start mount service on %v", c.String("mount-point"))
 	server, err := fuse.Server(c.String("mount-point"), *opts)
 	if err != nil {
 		log.Fatalf("mount fail: %v", err)
@@ -459,4 +464,20 @@ func signalHandle(mp string) {
 			}()
 		}
 	}()
+}
+
+func daemonRun() {
+	err := makeDaemon()
+	if err != nil {
+		log.Fatalf("Failed to make daemon: %s", err)
+	}
+	if runtime.GOOS == "linux" {
+		log.SetOutput(os.Stderr)
+	}
+}
+
+func makeDaemon() error {
+	var attrs utils2.DaemonAttr
+	_, _, err := utils2.MakeDaemon(&attrs)
+	return err
 }
